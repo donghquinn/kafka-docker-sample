@@ -1,12 +1,50 @@
 version: '2.1'
 
 services:
+  ui:
+    image: officialkakao/kafka-connect-web:latest
+    ports:
+      - 8080:8080
+    container_name: kafka-ui
+    environment:
+      VUE_APP_CONNECT_SERVERS: http://192.168.0.241:8003
+    networks:
+      - proxy
+
+  connector:
+    image: confluentinc/cp-kafka-connect:7.3.2
+    ports:
+      - 8083:8083
+    restart: unless-stopped
+    environment:
+      CONNECT_BOOTSTRAP_SERVERS: kafka1:29092
+      CONNECT_REST_PORT: 8083
+      CONNECT_GROUP_ID: "quickstart-avro"
+      CONNECT_CONFIG_STORAGE_TOPIC: "quickstart-avro-config"
+      CONNECT_OFFSET_STORAGE_TOPIC: "quickstart-avro-offsets"
+      CONNECT_STATUS_STORAGE_TOPIC: "quickstart-avro-status"
+      CONNECT_CONFIG_STORAGE_REPLICATION_FACTOR: 1
+      CONNECT_OFFSET_STORAGE_REPLICATION_FACTOR: 1
+      CONNECT_STATUS_STORAGE_REPLICATION_FACTOR: 1
+      CONNECT_KEY_CONVERTER: "org.apache.kafka.connect.json.JsonConverter"
+      CONNECT_VALUE_CONVERTER: "org.apache.kafka.connect.json.JsonConverter"
+      CONNECT_INTERNAL_KEY_CONVERTER: "org.apache.kafka.connect.json.JsonConverter"
+      CONNECT_INTERNAL_VALUE_CONVERTER: "org.apache.kafka.connect.json.JsonConverter"
+      CONNECT_REST_ADVERTISED_HOST_NAME: "localhost"
+      CONNECT_LOG4J_ROOT_LOGLEVEL: DEBUG
+      CONNECT_PLUGIN_PATH: "/usr/share/java,/etc/kafka-connect/jars"
+    volumes:
+      - ./confluentinc-kafka-connect-jdbc/lib:/etc/kafka-connect/jars
+    networks:
+      - proxy
+  
   zoo1:
     image: confluentinc/cp-zookeeper:7.3.2
     hostname: zoo1
     container_name: zoo1
     ports:
       - "2181:2181"
+    restart: unless-stopped
     environment:
       ZOOKEEPER_CLIENT_PORT: 2181
       ZOOKEEPER_SERVER_ID: 1
@@ -16,6 +54,7 @@ services:
     image: confluentinc/cp-zookeeper:7.3.2
     hostname: zoo2
     container_name: zoo2
+    restart: unless-stopped
     ports:
       - "2182:2182"
     environment:
@@ -27,6 +66,7 @@ services:
     image: confluentinc/cp-zookeeper:7.3.2
     hostname: zoo3
     container_name: zoo3
+    restart: unless-stopped
     ports:
       - "2183:2183"
     environment:
@@ -38,6 +78,7 @@ services:
     image: confluentinc/cp-kafka:7.3.2
     hostname: kafka1
     container_name: kafka1
+    restart: unless-stopped
     ports:
       - "9092:9092"
       - "29092:29092"
@@ -59,6 +100,7 @@ services:
     image: confluentinc/cp-kafka:7.3.2
     hostname: kafka2
     container_name: kafka2
+    restart: unless-stopped
     ports:
       - "9093:9093"
       - "29093:29093"
@@ -80,6 +122,7 @@ services:
     image: confluentinc/cp-kafka:7.3.2
     hostname: kafka3
     container_name: kafka3
+    restart: unless-stopped
     ports:
       - "9094:9094"
       - "29094:29094"
