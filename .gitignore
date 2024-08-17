@@ -1,2 +1,4 @@
 .DS_Store
 .env*
+mysql-connector-java-8.0.27
+confluentinc-kafka-connect-jdbc

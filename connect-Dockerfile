@@ -1,2 +1,67 @@
-FROM confluentinc/cp-kafka-connect:7.3.2
+FROM confluentinc/cp-kafka-connect-base:7.3.2
+
+# Debezium MySQL 커넥터 설치
+RUN wget https://repo1.maven.org/maven2/io/debezium/debezium-connector-mysql/1.9.6.Final/debezium-connector-mysql-1.9.6.Final-plugin.tar.gz \
+    && tar -zxvf debezium-connector-mysql-1.9.6.Final-plugin.tar.gz \
+    && mv debezium-connector-mysql /usr/share/confluent-hub-components \
+    && rm debezium-connector-mysql-1.9.6.Final-plugin.tar.gz
+
+# Debezium MariaDB 커넥터 설치
+RUN wget https://repo1.maven.org/maven2/io/debezium/debezium-connector-mariadb/2.7.1.Final/debezium-connector-mariadb-2.7.1.Final-plugin.tar.gz \
+    && tar -zxvf debezium-connector-mariadb-2.7.1.Final-plugin.tar.gz \
+    && mv debezium-connector-mariadb /usr/share/confluent-hub-components \
+    && rm debezium-connector-mariadb-2.7.1.Final-plugin.tar.gz
+
+# MySQL JDBC 드라이버 설치
+RUN wget https://downloads.mysql.com/archives/get/p/3/file/mysql-connector-j-8.4.0.tar.gz \
+    && tar -zxvf mysql-connector-j-8.4.0.tar.gz \
+    && mv mysql-connector-j-8.4.0/mysql-connector-j-8.4.0.jar /usr/share/confluent-hub-components/ \
+    && rm -rf mysql-connector-j-8.4.0 mysql-connector-j-8.4.0.tar.gz
+
+# MariaDB 드라이버 다운로드 및 설치
+RUN wget https://downloads.mariadb.com/Connectors/java/connector-java-2.7.10/mariadb-java-client-2.7.10.jar \
+    && mv mariadb-java-client-2.7.10.jar /usr/share/confluent-hub-components/
+
+
+ENV CLASSPATH=/usr/share/confluent-hub-components/mysql-connector-j-8.4.0.jar:/usr/share/confluent-hub-components/mariadb-java-client-2.7.10.jar
+
+
+# Kafka Connect 플러그인 경로 설정
+ENV CONNECT_PLUGIN_PATH="/usr/share/java,/usr/share/confluent-hub-components"
+
+
+# RUN wget https://repo1.maven.org/maven2/io/debezium/debezium-connector-mysql/1.9.6.Final/debezium-connector-mysql-1.9.6.Final-plugin.tar.gz
+
+# RUN tar -zxvf debezium-connector-mysql-1.9.6.Final-plugin.tar.gz
+
+# RUN mv debezium-connector-mysql /usr/share/confluent-hub-components
+
+# RUN wget https://repo1.maven.org/maven2/io/debezium/debezium-connector-mariadb/2.7.1.Final/debezium-connector-mariadb-2.7.1.Final-plugin.tar.gz
+
+# RUN tar -zxvf debezium-connector-mariadb-2.7.1.Final-plugin.tar.gz
+
+# RUN mv debezium-connector-mariadb /usr/share/confluent-hub-components
+
+# RUN wget https://downloads.mysql.com/archives/get/p/3/file/mysql-connector-j-8.4.0.tar.gz
+
+# RUN tar -zxvf mysql-connector-j-8.4.0.tar.gz
+
+# RUN mv mysql-connector-j-8.4.0 /usr/share/java
+
+
+
+
+
+# --------
+# RUN wget http://packages.confluent.io/archive/7.3/confluent-community-7.3.2.tar.gz -O ./kafka-connector.tar.gz
+
+# RUN tar -zxvf ./kafka-connector.tar.gz
+
+# RUN mv ./kafka-connector.tar.gz /etc/kafka-connect/jars/kafka-connect-jdbc-7.3.2.jar
+
+# RUN wget https://dev.mysql.com/get/Downloads/Connector-J/mysql-connector-java-8.0.27.tar.gz
+
+# RUN tar -xvf mysql-connector-java-8.0.27.tar.gz
+
+# RUN mv ./mysql-connector-java-8.0.27 /etc/kafka-connect/jars/mysql-connector-java-8.0.27
 
